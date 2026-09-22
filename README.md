@@ -240,3 +240,8 @@ call because that path is saved in the hyperparameters.
 ## License
 
 The source code is released under the [MIT License](LICENSE).
+
+## Citation
+
+The NexuST preprint is forthcoming. Citation details and a BibTeX entry
+will be added once it is available on bioRxiv.
