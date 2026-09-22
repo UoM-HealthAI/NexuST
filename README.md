@@ -30,6 +30,49 @@ CPU checks covered all five probe and fine-tuning tasks, embedding inference,
 pretraining save/resume, and loading existing research checkpoints. Fresh
 dependency resolution and production multi-node GPU runs have not been validated.
 
+## Data and pretrained weights
+
+- [HumanST-46M dataset](https://huggingface.co/datasets/Haiping-UoM/HumanST-46M):
+  72 training and 4 validation H5AD files, approximately 99.63 GiB in total.
+- [NexuST model](https://huggingface.co/Haiping-UoM/NexuST):
+  `NexuST-step10000.ckpt`, the checkpoint saved at training step 10,000.
+
+Both repositories are currently private and are planned for public release.
+Until then, downloads require a Hugging Face account with access:
+
+```bash
+python -m pip install huggingface_hub
+hf auth login
+```
+
+Download the checkpoint and validation data:
+
+```python
+from huggingface_hub import hf_hub_download, snapshot_download
+
+checkpoint_path = hf_hub_download(
+    repo_id="Haiping-UoM/NexuST",
+    filename="NexuST-step10000.ckpt",
+    local_dir="checkpoints",
+)
+snapshot_download(
+    repo_id="Haiping-UoM/HumanST-46M",
+    repo_type="dataset",
+    allow_patterns=["val/**/*.h5ad"],
+    local_dir="datasets/HumanST-46M",
+)
+```
+
+For the full pretraining dataset, use
+`allow_patterns=["train/**/*.h5ad", "val/**/*.h5ad"]`. Set the pretraining YAML's
+`dataset.train_dir` and `dataset.val_dir` to the downloaded `train/` and `val/`
+directories, then generate local patch indices as described below.
+
+The dataset preserves platform subdirectories. It does not include sampling
+indices or prepared downstream train/val splits; prepare those separately using
+the data requirements below. Downloaded H5AD files are already preprocessed;
+do not apply normalization or log1p again.
+
 ## Data preparation
 
 NexuST reads AnnData `.h5ad` files:
@@ -126,11 +169,12 @@ Local CSV logging is the default; set `logging.logger: wandb` to use the
 ## Embedding inference
 
 ```bash
-python inference.py --ckpt checkpoints/model.ckpt \
-  --h5ad datasets/input.h5ad --out output/embedded.h5ad --device cpu
+python inference.py --ckpt checkpoints/NexuST-step10000.ckpt \
+  --h5ad datasets/HumanST-46M/val/cosmx/cosmx_liver_normal.h5ad \
+  --out output/embedded.h5ad --device cuda:0
 ```
 
-Use `--device cuda:0` for one GPU, or `--gpus 0,1` for the existing multi-GPU
+Use `--device cpu` for CPU execution, or `--gpus 0,1` for the existing multi-GPU
 path. `--max_gene_len` and `--max_cells` control gene truncation and spatial
 chunk size. The Python API is `inference.embed_adata`.
 
@@ -145,7 +189,7 @@ data_path: datasets/downstream/my_dataset
 dataset_name: my_dataset
 output_dir: output/probe
 embedding:
-  pretrain_ckpt: checkpoints/model.ckpt
+  pretrain_ckpt: checkpoints/NexuST-step10000.ckpt
   max_gene_len: 300
   max_cells: 1024
   device: cpu
@@ -195,7 +239,7 @@ head option.
 ```bash
 python -m finetune.tasks.classification \
   --data_path datasets/downstream/my_dataset \
-  --pretrain_ckpt checkpoints/model.ckpt --label_col cell_type
+  --pretrain_ckpt checkpoints/NexuST-step10000.ckpt --label_col cell_type
 ```
 
 All tasks require `--data_path` and `--pretrain_ckpt`:
@@ -235,6 +279,15 @@ vocabularies. `finetune.utils.tools.load_encoder` loads the encoder;
 `load_nexust` loads the full pretraining model. Existing checkpoint module paths
 and strict state-dict matching are retained; no format conversion is needed.
 
-Public pretrained-weight downloads, the final checkpoint selection/checksum,
-project license, and citation metadata are pending. No public weight download
-is currently provided by this repository.
+The Hugging Face file `NexuST-step10000.ckpt` is 815,205,507 bytes. Its SHA256 is:
+
+```text
+178de8d6ad027c2bb699de9e25ebf0dc76915d63701590752fbd8ed85e647d7e
+```
+
+It is byte-identical to the step-10,000 research checkpoint used in the local
+GPU inference and short classification fine-tuning checks; the filename was
+changed for distribution. This is not the separate best-validation-loss
+checkpoint. Use it with the gene and metadata vocabularies bundled in this repo.
+
+Project license and citation metadata are still pending.
