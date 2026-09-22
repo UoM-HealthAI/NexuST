@@ -290,4 +290,13 @@ GPU inference and short classification fine-tuning checks; the filename was
 changed for distribution. This is not the separate best-validation-loss
 checkpoint. Use it with the gene and metadata vocabularies bundled in this repo.
 
-Project license and citation metadata are still pending.
+## License
+
+The source code is released under the [MIT License](LICENSE).
+
+## Citation
+
+The manuscript has not yet been posted to bioRxiv. For now, please cite the
+[NexuST software repository](https://github.com/UoM-HealthAI/NexuST) and include
+the release tag or commit hash used in your work. The paper citation will be
+added when the preprint is available.
