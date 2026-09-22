@@ -1,12 +1,12 @@
-"""NexuST Gene Imputation Finetune (drop-input, probe-aligned).
+"""NexuST Gene Recovery Finetune (drop-input, probe-aligned).
 
 The HVG60 gene tokens are removed from the encoder input entirely (encoder never
 sees them). A single ``Linear(d_model -> n_hvg)`` head predicts their raw
 expression from each cell's CLS embedding. Train and validation both target the
-same fixed HVG60 set as ``probe/tasks/imputation.py``. Fine-tuning updates
+same fixed HVG60 set as ``probe/tasks/gene_recovery.py``. Fine-tuning updates
 the encoder on sampled spatial patches; probe uses precomputed embeddings.
 
-See ``docs/finetune.md`` for the downstream data contract.
+See the README for the downstream data requirements.
 """
 
 import argparse
@@ -430,7 +430,7 @@ class _BestEpochCb(pl.Callback):
 # ────────────────────────────────────────────────────────────────────────────
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="NexuST Gene Imputation (drop-input)")
+    parser = argparse.ArgumentParser(description="NexuST Gene Recovery (drop-input)")
     add_shared_args(parser)
     parser.add_argument("--pretrain_ckpt", type=str, required=True)
     parser.add_argument("--hvg_symbol_path", type=str, default=None,
@@ -459,7 +459,7 @@ def main():
     if not hvg_path.exists():
         raise FileNotFoundError(f"HVG symbol file not found: {hvg_path}")
     hvg_symbols = _load_hvg_symbols(hvg_path)
-    print(f"[imputation] HVG: {len(hvg_symbols)} symbols")
+    print(f"[gene_recovery] HVG: {len(hvg_symbols)} symbols")
 
     tokenizer = get_tokenizer()
 
@@ -481,7 +481,7 @@ def main():
     )
 
     run_id = args.run_id or datetime.now().strftime("%Y%m%d_%H%M")
-    ckpt_dir = build_ckpt_dir(args.ckpt_root, "imputation", run_id,
+    ckpt_dir = build_ckpt_dir(args.ckpt_root, "gene_recovery", run_id,
                               dataset_name, mode, f"seed{seed}")
 
     runner = TrainingRunner(
@@ -497,7 +497,7 @@ def main():
         wandb_group=args.group or f"{dataset_name}-imp-{mode}",
         wandb_name=f"nexust-linear_{dataset_name}_{mode}_seed{seed}_lr{args.lr:g}",
         wandb_config={
-            "task": "imputation", "model": "nexust",
+            "task": "gene_recovery", "model": "nexust",
             "head": "linear", "pretrained_head": False,
             "phase": getattr(args, "phase", "final"),
             "dataset": dataset_name, "mode": mode, "seed": seed,
@@ -506,7 +506,7 @@ def main():
             "accumulate_grad_batches": args.accumulate_grad_batches,
         },
         wandb_tags=[
-            "imputation",
+            "gene_recovery",
             f"phase:{getattr(args, 'phase', 'final')}",
             "head:linear",
             "model:nexust",

@@ -2,7 +2,7 @@
 
 Classifies each cell into its tissue region / niche (e.g. tumor vs interface
 for liver cancer, hepatic zones for normal liver, CNiche for lung). Mirrors
-``classification.py`` but reads ``obs[region_col]`` instead of the cell-type
+``cell_annotation.py`` but reads ``obs[region_col]`` instead of the cell-type
 label, and infers ``n_classes`` from the fitted LabelEncoder so per-dataset
 class counts do not need to be hardcoded.
 
@@ -27,12 +27,12 @@ from probe.tasks.base import BaseProbeTask
 
 
 class RegionClassificationTask(BaseProbeTask):
-    task_name = "region_classification"
+    task_name = "region_prediction"
     csv_columns = ["dataset", "mode", "seed", "accuracy", "f1"]
     metric_keys = ["accuracy", "f1"]
 
     def get_train_cfg(self, cfg):
-        return cfg.region_classification
+        return cfg.region_prediction
 
     def load_labels(self, adatas, metadata):
         dataset_name = metadata["dataset_name"]

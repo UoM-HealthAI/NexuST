@@ -1,6 +1,6 @@
-"""NexuST region classification fine-tuning.
+"""NexuST region prediction fine-tuning.
 
-Same training recipe as ``classification.py`` (same NexuSTClassifier, same
+Same training recipe as ``cell_annotation.py`` (same NexuSTClassifier, same
 datasets, same recorder) but reads ``obs[region_col]`` instead of the cell-type
 label. ``label_col`` defaults to ``DATASET_CONFIG[dataset].region_col``; passing
 ``--label_col`` overrides.
@@ -18,7 +18,7 @@ from datetime import datetime
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 from data.tokenizer import get_tokenizer  # noqa: E402
-from finetune.tasks.classification import (  # noqa: E402
+from finetune.tasks.cell_annotation import (  # noqa: E402
     TrainClassificationDataset,
     ValClassificationDataset,
     ClassificationCollator,
@@ -32,7 +32,7 @@ from configs.datasets import DATASET_CONFIG  # noqa: E402
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='NexuST Region Classification')
+    parser = argparse.ArgumentParser(description='NexuST Region Prediction')
     add_shared_args(parser)
 
     # Task-specific
@@ -72,7 +72,7 @@ def main():
     print(f"Region label column: {args.label_col}", flush=True)
 
     run_id = args.run_id or datetime.now().strftime("%Y%m%d_%H%M")
-    ckpt_dir = build_ckpt_dir(args.ckpt_root, "region_classification", run_id,
+    ckpt_dir = build_ckpt_dir(args.ckpt_root, "region_prediction", run_id,
                               dataset_name, mode, f"seed{seed}")
 
     tokenizer = get_tokenizer()
@@ -114,7 +114,7 @@ def main():
         wandb_config={
             "mode": mode, "lr": args.head_lr or args.lr,
             "head": "linear", "pretrained_head": False, "phase": args.phase,
-            "task": "region_classification", "dataset": dataset_name, "model": "nexust",
+            "task": "region_prediction", "dataset": dataset_name, "model": "nexust",
             "head_lr": args.head_lr or args.lr, "encoder_lr": args.encoder_lr,
             "batch_size": args.batch_size, "seed": seed,
             "label_col": args.label_col, "num_classes": num_classes,

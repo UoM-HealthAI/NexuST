@@ -279,7 +279,7 @@ class ClassificationMetricsRecorder(BaseMetricsRecorder):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='NexuST Cell Classification')
+    parser = argparse.ArgumentParser(description='NexuST Cell Annotation')
     add_shared_args(parser)
 
     # Task-specific
@@ -289,7 +289,7 @@ def parse_args():
     parser.add_argument('--n_spots', type=int, default=512)
     parser.add_argument('--gradient_checkpointing', action='store_true')
 
-    parser.set_defaults(output_dir=str(Path.cwd() / 'output/results/annotation/nexust'))
+    parser.set_defaults(output_dir=str(Path.cwd() / 'output/results/cell_annotation/nexust'))
     return parser.parse_args()
 
 
@@ -301,7 +301,7 @@ def main():
     seed = args.seed
     pl.seed_everything(seed, workers=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-    ckpt_dir = build_ckpt_dir(args.ckpt_root, "classification", timestamp, dataset_name, mode, f"seed{seed}")
+    ckpt_dir = build_ckpt_dir(args.ckpt_root, "cell_annotation", timestamp, dataset_name, mode, f"seed{seed}")
 
     # Datasets
     tokenizer = get_tokenizer()
@@ -345,7 +345,7 @@ def main():
         wandb_config={
             "mode": mode, "lr": args.head_lr or args.lr,
             "head": "linear", "pretrained_head": False, "phase": args.phase,
-            "task": "classification", "dataset": dataset_name, "model": "nexust",
+            "task": "cell_annotation", "dataset": dataset_name, "model": "nexust",
             "head_lr": args.head_lr or args.lr, "encoder_lr": args.encoder_lr,
             "batch_size": args.batch_size, "seed": seed,
         },

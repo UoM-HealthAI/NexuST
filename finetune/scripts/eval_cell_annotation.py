@@ -1,4 +1,4 @@
-"""Re-evaluate a single NexuST classification checkpoint on the full val set.
+"""Re-evaluate a single NexuST cell annotation checkpoint on the full val set.
 
 Used to regenerate ``best_metrics.json`` files that were polluted by the DDP
 val-sharding bug (``_val_preds`` / ``_val_labels`` were computed on 1/N of
@@ -16,8 +16,8 @@ no race on JSON write. Intended to be launched as a SLURM array job, one
 task per checkpoint.
 
 Usage:
-    python finetune/scripts/eval_classification.py \
-        --ckpt_path checkpoints/classification/model.ckpt \
+    python finetune/scripts/eval_cell_annotation.py \
+        --ckpt_path checkpoints/cell_annotation/model.ckpt \
         --data_path datasets/downstream/adult_umb5958 \
         --label_col H1_annotation
 """
@@ -43,7 +43,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from data.tokenizer import get_tokenizer
-from finetune.tasks.classification import (
+from finetune.tasks.cell_annotation import (
     ClassificationCollator,
     NexuSTClassifier,
     TrainClassificationDataset,
@@ -125,7 +125,7 @@ def compute_metrics(preds: np.ndarray, labels: np.ndarray, label_encoder):
     preds_t = torch.from_numpy(preds).long()
     labels_t = torch.from_numpy(labels).long()
 
-    # Scalar metrics (same metric classes as NexuSTClassifier in classification.py)
+    # Scalar metrics (same metric classes as NexuSTClassifier in cell_annotation.py)
     acc = float(MulticlassAccuracy(num_classes=n_classes, average="micro")(preds_t, labels_t))
     f1 = float(MulticlassF1Score(num_classes=n_classes, average="macro")(preds_t, labels_t))
 
@@ -169,7 +169,7 @@ def main():
     parser.add_argument("--max_gene_len", type=int, default=300,
                         help="Must match training (default matches add_shared_args)")
     parser.add_argument("--n_spots", type=int, default=512,
-                        help="Must match training (default matches classification.py)")
+                        help="Must match training (default matches cell_annotation.py)")
     parser.add_argument("--num_workers", type=int, default=4)
     parser.add_argument("--output_json", type=str, default=None,
                         help="Override output JSON path (default: <ckpt_dir>/best_metrics.json)")

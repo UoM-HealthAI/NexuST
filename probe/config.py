@@ -24,9 +24,9 @@ class ComputeConfig:
 @dataclass
 class TaskConfig:
     embedding: EmbeddingConfig = field(default_factory=EmbeddingConfig)
-    classification: TrainingConfig = field(default_factory=lambda: TrainingConfig(lr=0.1))
-    region_classification: TrainingConfig = field(default_factory=lambda: TrainingConfig(lr=0.01))
-    imputation: TrainingConfig = field(default_factory=TrainingConfig)
+    cell_annotation: TrainingConfig = field(default_factory=lambda: TrainingConfig(lr=0.1))
+    region_prediction: TrainingConfig = field(default_factory=lambda: TrainingConfig(lr=0.01))
+    gene_recovery: TrainingConfig = field(default_factory=TrainingConfig)
     niche: TrainingConfig = field(default_factory=TrainingConfig)
     density: TrainingConfig = field(default_factory=TrainingConfig)
     compute: ComputeConfig = field(default_factory=ComputeConfig)

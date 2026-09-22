@@ -91,7 +91,7 @@ def _drop_and_embed_dir(adapter, data_dir: Path, spatial_key: str,
 
 
 class ImputationTask(BaseProbeTask):
-    task_name = "imputation"
+    task_name = "gene_recovery"
     csv_columns = ["dataset", "mode", "seed", "mse", "mae", "pcc"]
     metric_keys = ["mse", "mae", "pcc"]
 
@@ -101,7 +101,7 @@ class ImputationTask(BaseProbeTask):
         self._target_genes = None
 
     def get_train_cfg(self, cfg):
-        return cfg.imputation
+        return cfg.gene_recovery
 
     def _embed(self, cfg: TaskConfig):
         """Override base _embed: drop target genes from input, then embed."""

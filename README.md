@@ -63,15 +63,15 @@ Prepare downstream data as:
 datasets/downstream/my_dataset/
   train/*.h5ad
   val/*.h5ad
-  hvg60_symbol.npy             # imputation only
+  hvg60_symbol.npy             # gene recovery only
 ```
 
 Split by FOV/sample before evaluation. The validation split is used for model
 selection and reported metrics; it is not an independent test split.
 
-- **Classification / region classification:** supply `obs[label_col]`. Validation
+- **Cell annotation / region prediction:** supply `obs[label_col]`. Validation
   labels must occur in the training label vocabulary.
-- **Imputation:** supply an ordered string array `hvg60_symbol.npy`. All target
+- **Gene recovery:** supply an ordered string array `hvg60_symbol.npy`. All target
   genes must occur in every input file and the model vocabulary. Select targets
   using training data. Probe and fine-tuning both remove target genes from the
   encoder input and predict their original values in `X`. The filename is
@@ -172,26 +172,26 @@ dataset:
 Save this as `my_probe.yaml` and run the desired task:
 
 ```bash
-python -m probe --task classification --config my_probe.yaml
-python -m probe --task region_classification --config my_probe.yaml
-python -m probe --task imputation --config my_probe.yaml
+python -m probe --task cell_annotation --config my_probe.yaml
+python -m probe --task region_prediction --config my_probe.yaml
+python -m probe --task gene_recovery --config my_probe.yaml
 python -m probe --task niche --config my_probe.yaml --all_radii
 python -m probe --task density --config my_probe.yaml --all_radii
 ```
 
 Built-in dataset defaults come from `configs/datasets.yaml`; explicit `dataset`
-fields override them. Task sections such as `classification` accept `seeds`,
+fields override them. Task sections such as `cell_annotation` accept `seeds`,
 `lr`, `weight_decay`, `batch_size`, `max_epochs`, `num_workers`, and `patience`.
 CLI `--seeds`, `--batch_size`, and `--output_dir` override those values.
 Use `--radius_idx 0` to evaluate one radius. Embedding device and head-training
 compute are configured separately; the supplied template defaults to automatic
 device selection and `bf16-true` head training.
 
-Classification and region classification select the best validation macro-F1;
+Cell annotation and region prediction select the best validation macro-F1;
 regression tasks select the best MSE. Results include CSV seed rows and
-mean/std summaries plus task-specific JSON/per-target metrics. Imputation
+mean/std summaries plus task-specific JSON/per-target metrics. Gene recovery
 `--dump_pred_dir PATH` saves predictions; niche supports `NICHE_DUMP_PREDS=1`;
-region classification saves seed-42 predictions. Niche and region predictions
+region prediction saves seed-42 predictions. Niche and region predictions
 are written under `output_dir/predictions`. Prediction dumps use best-epoch
 weights. Probe does not currently export a persistent trained-head checkpoint.
 
@@ -202,7 +202,7 @@ the separate probe workflow; there is no freeze switch or downstream decoder
 head option.
 
 ```bash
-python -m finetune.tasks.classification \
+python -m finetune.tasks.cell_annotation \
   --data_path datasets/downstream/my_dataset \
   --pretrain_ckpt checkpoints/NexuST-step10000.ckpt --label_col cell_type
 ```
@@ -211,28 +211,28 @@ All tasks require `--data_path` and `--pretrain_ckpt`:
 
 | Module after `python -m finetune.tasks.` | Task arguments |
 | --- | --- |
-| `classification` | `--label_col cell_type` |
-| `region_classification` | `--label_col region` or a built-in dataset name |
-| `imputation` | Optional `--hvg_symbol_path`; defaults to `data_path/hvg60_symbol.npy` |
+| `cell_annotation` | `--label_col cell_type` |
+| `region_prediction` | `--label_col region` or a built-in dataset name |
+| `gene_recovery` | Optional `--hvg_symbol_path`; defaults to `data_path/hvg60_symbol.npy` |
 | `niche_prediction` | `--radius_idx 0` |
 | `density_prediction` | `--radius_idx 0 --radii 0.25 0.5`; optional `--label_col` |
 
 Use each module's `--help` for all options. Common controls include `--seed`,
 `--lr`, `--encoder_lr`, `--batch_size`, `--accumulate_grad_batches`,
 `--max_epochs`, `--max_gene_len`, `--num_workers`, `--devices`, `--accelerator`,
-`--precision`, `--output_dir`, and `--ckpt_root`. Classification/region also
-accept `--head_lr`; imputation uses its single-learning-rate recipe.
+`--precision`, `--output_dir`, and `--ckpt_root`. Cell annotation/region also
+accept `--head_lr`; gene recovery uses its single-learning-rate recipe.
 For CPU, add `--accelerator cpu --precision 32-true`. Logging defaults to local
 CSV; `--logger wandb` uses `HiGeST-finetune`.
 
-Classification/region select best validation accuracy, niche/density select
-best MSE, and imputation selects best PCC. Fine-tuning uses sampled spatial
+Cell annotation/region select best validation accuracy, niche/density select
+best MSE, and gene recovery selects best PCC. Fine-tuning uses sampled spatial
 patches, whereas probe uses fixed embeddings. Niche applies linear -> softplus
 -> normalized proportions; its fine-tuning head has no bias and its probe head
 has bias, preserving the task implementations.
 
 Downstream checkpoints are weights-only; the task CLIs do not expose optimizer
-resume. Classification and niche evaluation scripts remain in
+resume. Cell annotation and niche evaluation scripts remain in
 `finetune/scripts/`. When relocating the original pretraining checkpoint,
 override `pretrain_ckpt=...` in the downstream Lightning `load_from_checkpoint`
 call because that path is saved in the hyperparameters.

@@ -4,9 +4,9 @@ from importlib import import_module
 from probe.config import TaskConfig
 
 TASKS = {
-    "classification": ("classification", "ClassificationTask"),
-    "region_classification": ("region_classification", "RegionClassificationTask"),
-    "imputation": ("imputation", "ImputationTask"),
+    "cell_annotation": ("cell_annotation", "ClassificationTask"),
+    "region_prediction": ("region_prediction", "RegionClassificationTask"),
+    "gene_recovery": ("gene_recovery", "ImputationTask"),
     "niche": ("niche_prediction", "NichePredictionTask"),
     "density": ("density_prediction", "DensityPredictionTask"),
 }
@@ -16,9 +16,9 @@ def run_task(task_name, cfg, *, radius_idx=0, all_radii=False, dump_pred_dir=Non
     task = getattr(import_module(f"probe.tasks.{module}"), class_name)()
     if all_radii and task_name not in ("niche", "density"):
         raise ValueError("--all_radii applies only to niche and density")
-    if dump_pred_dir is not None and task_name != "imputation":
-        raise ValueError("--dump_pred_dir applies only to imputation")
-    if task_name == "imputation":
+    if dump_pred_dir is not None and task_name != "gene_recovery":
+        raise ValueError("--dump_pred_dir applies only to gene_recovery")
+    if task_name == "gene_recovery":
         task._dump_pred_dir = dump_pred_dir
     if all_radii:
         return task.run_all_radii(cfg)

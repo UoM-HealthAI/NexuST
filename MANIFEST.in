@@ -10,9 +10,9 @@ prune .claude
 prune .agents
 prune skills
 recursive-exclude finetune/scripts *.sh
-include finetune/scripts/run_classification.sh
-include finetune/scripts/run_region_classification.sh
-include finetune/scripts/run_imputation.sh
+include finetune/scripts/run_cell_annotation.sh
+include finetune/scripts/run_region_prediction.sh
+include finetune/scripts/run_gene_recovery.sh
 include finetune/scripts/run_niche.sh
 include finetune/scripts/run_density.sh
 prune docs

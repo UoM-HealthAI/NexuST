@@ -13,12 +13,12 @@ from probe.tasks.base import BaseProbeTask
 
 
 class ClassificationTask(BaseProbeTask):
-    task_name = "classification"
+    task_name = "cell_annotation"
     csv_columns = ["dataset", "mode", "seed", "accuracy", "f1"]
     metric_keys = ["accuracy", "f1"]
 
     def get_train_cfg(self, cfg):
-        return cfg.classification
+        return cfg.cell_annotation
 
     def load_labels(self, adatas, metadata):
         dataset_name = metadata["dataset_name"]
