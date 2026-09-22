@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nexust"
+version = "0.1.0"
+description = "Hierarchical Gene-level Spatial Transcriptomics"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.7",
+    "pytorch-lightning>=2.0",
+    "torchmetrics",
+    "anndata>=0.10",
+    "scanpy>=1.9",
+    "numpy", "pandas", "scipy", "scikit-learn", "h5py",
+    "omegaconf", "pyyaml", "wandb>=0.15", "tqdm", "hilbertcurve",
+]
+
+[project.optional-dependencies]
+preprocess = ["scikit-misc"]
+
+[project.scripts]
+nexust-pretrain = "train:main"
+nexust-embed = "inference:main"
+nexust-probe = "probe.run:main"
+
+[tool.setuptools]
+py-modules = ["train", "inference"]
+
+[tool.setuptools.packages.find]
+namespaces = false
+include = ["model*", "engines*", "data*", "finetune*", "probe*", "evaluation*", "configs*"]
+exclude = ["datasets*"]
+
+[tool.setuptools.package-data]
+data = ["*.json"]
+configs = ["*.yaml", "yaml/*.yaml", "probe/*.yaml"]

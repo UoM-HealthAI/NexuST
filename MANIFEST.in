@@ -1,0 +1,20 @@
+include README.md
+recursive-include configs *.yaml
+recursive-include data *.json
+prune baseline
+prune output
+prune finetune/results
+prune scripts
+prune .claude
+prune .agents
+prune skills
+recursive-exclude finetune/scripts *.sh
+include finetune/scripts/run_classification.sh
+include finetune/scripts/run_region_classification.sh
+include finetune/scripts/run_imputation.sh
+include finetune/scripts/run_niche.sh
+include finetune/scripts/run_density.sh
+prune docs
+prune tests
+prune .github
+exclude AGENTS.md AGENT_GUIDE.md CLAUDE.md

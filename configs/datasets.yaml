@@ -1,0 +1,45 @@
+datasets:
+  cosmx_liver_cancer:
+    label_col: cellType
+    n_classes: 17
+    region_col: niche                  # tumor / tumor subtype / interface
+    platform: cosmx
+    specie: human
+    density_radii: [0.25, 0.50, 0.75]
+    niche_radii: [0.21, 0.30, 0.49, 0.71]
+
+  cosmx_liver_normal:
+    label_col: cellType
+    n_classes: 18
+    region_col: niche                  # Zone_2a / Zone_2b / Zone_3a
+    platform: cosmx
+    specie: human
+    density_radii: [0.25, 0.50, 0.75]
+    niche_radii: [0.25, 0.35, 0.56, 0.81]
+
+  adult_umb5958:
+    label_col: H1_annotation
+    n_classes: 8
+    region_col: null                   # layer/area empty; no region label
+    platform: merfish
+    specie: human
+    density_radii: [0.25, 0.50, 1.00]
+    niche_radii: [0.29, 0.42, 0.68, 0.99]
+
+  adult_umb5958_h2:
+    label_col: H2_annotation
+    n_classes: 34
+    region_col: null
+    platform: merfish
+    specie: human
+    density_radii: [0.25, 0.50, 1.00]
+    niche_radii: [0.29, 0.42, 0.68, 0.99]
+
+  pulmonary_fibrosis_xenium:
+    label_col: final_CT
+    n_classes: 47
+    region_col: CNiche                 # C1..C12 (cellular niches)
+    platform: xenium
+    specie: human
+    density_radii: [0.15, 0.25, 0.40]
+    niche_radii: [0.12, 0.17, 0.28, 0.40]

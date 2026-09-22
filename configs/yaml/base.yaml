@@ -1,0 +1,13 @@
+# Shared local defaults; small.yaml and large.yaml override these.
+dataset:
+  train_dir: datasets/pretrain/train
+  val_dir: datasets/pretrain/val
+logging:
+  logger: csv
+  project_name: HiGeST-pretrain
+  save_dir: checkpoints/pretrain
+compute:
+  accelerator: auto
+  devices: 1
+  num_nodes: 1
+  strategy: auto

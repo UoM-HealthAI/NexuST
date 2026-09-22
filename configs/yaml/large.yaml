@@ -1,0 +1,81 @@
+# NexuST Base Configuration - Default values for all parameters
+
+model:
+  gene_vocab_size: 19228
+  organ_vocab_size: 16
+  n_genes: 300
+  d_model: 512
+  n_layers: 8
+  n_heads: 8
+  dropout: 0.1
+
+  gene_mask_ratio: 0.20
+
+  max_value: 512
+  padding_idx: 0
+
+dataset:
+  train_dir: datasets/pretrain/train
+  val_dir: datasets/pretrain/val
+  n_spots: 512
+  max_gene_len: 300
+  batch_size: 6
+  num_workers: 1
+
+  target_cells_per_subslide: 5000
+  patches_per_subslide: 12
+
+tokenizer:
+  vocab_file: null
+  default_vocab_type: "census"
+  special_tokens: ["<pad>"]
+  default_token: "<pad>"
+
+training:
+  learning_rate: 3e-4
+  weight_decay: 0.01
+
+  max_steps: 10000
+  warmup_steps: 1000        
+
+  grad_clip_norm: 1.0
+  accumulate_grad_batches: 1
+
+  optimizer: "adamw"
+  adam_beta1: 0.9
+  adam_beta2: 0.999
+  adam_eps: 1.0e-8
+
+  scheduler: "cosine"
+  min_lr: 1.0e-6
+
+  early_stopping: false
+
+logging:
+  project_name: HiGeST-pretrain
+  run_name: null  
+  save_dir: checkpoints/pretrain
+  log_every_n_steps: 50
+  val_check_interval: 100      # Validate every 500 steps
+  save_every_n_steps: 1000     # Save checkpoint every 5000 steps
+  save_top_k: 1
+  monitor_metric: "val_loss"
+  monitor_mode: "min"
+
+compute:
+  accelerator: "gpu"
+  devices: 4              # Number of GPUs per node
+  num_nodes: 8            # Number of nodes for training
+  precision: "bf16-mixed"
+  strategy: "fsdp"        # Training strategy: 'auto', 'ddp', or 'fsdp'
+  compile_model: false
+  detect_anomaly: false
+
+  fsdp_sharding_strategy: "FULL_SHARD"  # 'FULL_SHARD' (most memory efficient), 'SHARD_GRAD_OP', 'HYBRID_SHARD', 'NO_SHARD'
+  fsdp_activation_checkpointing: true    # Enable to save memory at cost of speed
+
+# General settings
+seed: 52
+debug: false
+resume_from_checkpoint: null
+test_only: false

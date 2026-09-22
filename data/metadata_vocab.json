@@ -1,0 +1,22 @@
+{
+  "organ": {
+    "unknown": 0,
+    "brain": 1,
+    "breast": 2,
+    "colon": 3,
+    "kidney": 4,
+    "liver": 5,
+    "lung": 6,
+    "lymph_node": 7,
+    "ovary": 8,
+    "prostate": 9,
+    "skin": 10,
+    "uterus": 11
+  },
+  "platform": {
+    "unknown": 0,
+    "merfish": 1,
+    "xenium": 2,
+    "cosmx": 3
+  }
+}

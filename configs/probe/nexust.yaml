@@ -1,0 +1,19 @@
+# Run from the repository root; replace the data and checkpoint paths.
+data_path: datasets/downstream/cosmx_liver_cancer
+dataset_name: cosmx_liver_cancer
+embedding:
+  pretrain_ckpt: checkpoints/pretrain/model.ckpt
+  max_gene_len: 300
+  max_cells: 1024
+  device: auto
+compute:
+  devices: 1
+  accelerator: auto
+  precision: bf16-true
+# Built-in label fields and radii come from configs/datasets.yaml.
+# For a custom dataset, set dataset_name and supply the fields below:
+# dataset:
+#   label_col: cell_type
+#   region_col: region
+#   density_radii: [0.25, 0.5, 0.75]
+#   niche_radii: [0.21, 0.30, 0.49, 0.71]
