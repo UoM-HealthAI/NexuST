@@ -243,5 +243,14 @@ The source code is released under the [MIT License](LICENSE).
 
 ## Citation
 
-The NexuST preprint is forthcoming. Citation details and a BibTeX entry
-will be added once it is available on bioRxiv.
+If you use NexuST in your research, please cite our [bioRxiv preprint](https://doi.org/10.64898/2026.09.22.753590):
+
+```bibtex
+@article{liu2026nexust,
+  title   = {NexuST: A Hierarchical Foundation Model for Spatial Transcriptomics},
+  author  = {Liu, Haiping and Zhao, Qian and Lin, Lijing and Zou, Zhiyong and Cai, Wenhao and Sun, Jingyuan and Zhou, Yuxi and Alvarez, Mauricio A. and Gilmore, Andrew and Rattray, Magnus and Frangi, Alejandro F. and Zhou, Hongpeng},
+  journal = {bioRxiv},
+  year    = {2026},
+  doi     = {10.64898/2026.09.22.753590}
+}
+```
